@@ -1,4 +1,4 @@
-package com.blackjack.test;
+package test;
 
 import com.google.gson.Gson;
 

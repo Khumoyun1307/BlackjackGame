@@ -138,9 +138,12 @@ public class ConsoleUI implements GameUI{
         }
     }
 
-    public String readLine() {
+    @Override
+    public String prompt(String message) {
+        System.out.print(message);
         return scanner.nextLine().trim();
     }
+
 
     public void showHand(Hand hand) {
         System.out.printf("(value: %s)%n", hand.getDisplayValue());

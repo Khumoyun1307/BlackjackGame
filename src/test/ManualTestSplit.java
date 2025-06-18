@@ -1,9 +1,7 @@
-package com.blackjack.test;
+package test;
 
 import com.blackjack.model.*;
 import com.blackjack.game.GameRules;
-
-import java.util.List;
 
 public class ManualTestSplit {
 

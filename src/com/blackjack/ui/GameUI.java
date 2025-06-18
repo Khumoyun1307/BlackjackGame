@@ -21,4 +21,5 @@ public interface GameUI {
     void showHand(Hand hand);
     int promptMenuChoice();
     void showStats(GameStats stats);
+    String prompt(String message);
 }

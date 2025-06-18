@@ -1,4 +1,4 @@
-package com.blackjack.test;
+package test;
 
 import com.blackjack.game.GameRules;
 import com.blackjack.game.RoundManager;

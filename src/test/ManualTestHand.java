@@ -1,4 +1,4 @@
-package com.blackjack.test;
+package test;
 
 import com.blackjack.model.Card;
 import com.blackjack.model.Hand;

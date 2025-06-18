@@ -1,25 +1,30 @@
 package com.blackjack;
-
-import com.blackjack.game.BlackjackGame;
 import com.blackjack.game.BlackjackRoom;
 import com.blackjack.game.GameRules;
 import com.blackjack.model.Dealer;
-import com.blackjack.model.Player;
 import com.blackjack.stats.GameStats;
 import com.blackjack.stats.StatsManager;
-import com.blackjack.ui.ConsoleUI;
+import com.blackjack.ui.GameUI;
 import com.blackjack.user.PlayerProfile;
 import com.blackjack.user.UserManager;
 
 public class CasinoApp {
 
-    private final ConsoleUI ui = new ConsoleUI();
-    private final GameRules rules = new GameRules();
+    private final GameUI ui;
+    private final GameRules rules;
     // private final Player player = new Player("Player", 1000);
-    private final Dealer dealer = new Dealer();
+    private final Dealer dealer;
 
-    private final UserManager userManager = new UserManager();
-    private PlayerProfile loggedInProfile = null;
+    private final UserManager userManager;
+    private PlayerProfile loggedInProfile;
+
+    public CasinoApp(GameUI ui) {
+        this.ui = ui;
+        this.rules = new GameRules();
+        this.dealer = new Dealer();
+        this.userManager = new UserManager();
+        this.loggedInProfile = null;
+    }
 
     public void run() {
         boolean running = true;
@@ -66,10 +71,8 @@ public class CasinoApp {
     }
 
     private boolean handleLogin() {
-        ui.displayMessageWithoutLn("Enter username: ");
-        String username = ui.readLine();
-        ui.displayMessageWithoutLn("Enter password: ");
-        String password = ui.readLine();
+        String username = ui.prompt("Enter username: ");
+        String password = ui.prompt("Enter password: ");
 
         PlayerProfile profile = userManager.login(username, password);
 
@@ -84,16 +87,14 @@ public class CasinoApp {
     }
 
     private boolean handleSignup() {
-        ui.displayMessageWithoutLn("Choose a username: ");
-        String username = ui.readLine();
+        String username = ui.prompt("Choose a username: ");
 
         if (userManager.usernameExists(username)) {
             ui.displayMessage("❌ That username is already taken.");
             return false;
         }
 
-        ui.displayMessageWithoutLn("Choose a password: ");
-        String password = ui.readLine();
+        String password = ui.prompt("Choose a password: ");
 
         PlayerProfile profile = userManager.register(username, password);
         if (profile != null) {
