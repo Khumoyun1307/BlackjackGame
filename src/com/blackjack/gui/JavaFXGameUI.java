@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class JavaFXGameUI implements GameUI {
-
+    
     @Override
     public void displayMessage(String message) {
         Alert alert = new Alert(AlertType.INFORMATION);

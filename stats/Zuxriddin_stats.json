@@ -1,9 +1,9 @@
 {
-  "wins": 4,
+  "wins": 5,
   "losses": 4,
   "pushes": 0,
-  "totalBet": 370.0,
-  "netProfit": -270.0,
+  "totalBet": 390.0,
+  "netProfit": -250.0,
   "history": [
     {
       "timestamp": "2025-06-18T11:19:32.545430900",
@@ -75,6 +75,15 @@
       "payout": 0.0,
       "result": "Lose",
       "playerValue": 17,
+      "dealerValue": 19
+    },
+    {
+      "timestamp": "2025-06-19T08:11:30.034284300",
+      "handNumber": 1,
+      "bet": 20.0,
+      "payout": 40.0,
+      "result": "Win",
+      "playerValue": 20,
       "dealerValue": 19
     }
   ]

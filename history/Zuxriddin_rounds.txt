@@ -24,3 +24,4 @@ Hand 1 | Win | Bet: $10.00 | Payout: $20.00 | You: 19 | Dealer: 26
 Hand 2 | Win | Bet: $10.00 | Payout: $20.00 | You: 19 | Dealer: 26
 Hand 1 | Lose | Bet: $10.00 | Payout: $0.00 | You: 18 | Dealer: 19
 Hand 1 | Lose | Bet: $10.00 | Payout: $0.00 | You: 17 | Dealer: 19
+Hand 1 | Win | Bet: $20.00 | Payout: $40.00 | You: 20 | Dealer: 19
