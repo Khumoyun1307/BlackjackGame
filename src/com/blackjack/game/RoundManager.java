@@ -203,31 +203,7 @@ public class RoundManager {
                         break;
                     case SPLIT:
                         if (canSplit) {
-                            // Remove the original hand from the player's hands
-                            player.removeHand(currentHand);
-
-                            Card originalCard1 = currentHand.getCards().get(0);
-                            Card originalCard2 = currentHand.getCards().get(1);
-
-                            // Create two new hands
-                            Hand hand1 = new Hand();
-                            hand1.addCard(originalCard1);
-                            hand1.addCard(shoe.drawCard());
-                            hand1.setBet(currentHand.getBet());
-
-                            Hand hand2 = new Hand();
-                            hand2.addCard(originalCard2);
-                            hand2.addCard(shoe.drawCard());
-                            hand2.setBet(currentHand.getBet());
-
-                            // Adjust player balance for the second hand
-                            player.adjustBalance(-currentHand.getBet());
-
-                            // Add new hands to player's list
-                            player.addHand(hand1);
-                            player.addHand(hand2);
-
-                            ui.displayMessage("You split your hand into two.");
+                            splitHands(currentHand);
                             ui.showPlayerHand(player);
 
                             // Decrement `i` so that the loop picks up the new first hand next
@@ -241,11 +217,9 @@ public class RoundManager {
                         break;
                     case SURRENDER:
                         if (canSurrender) {
-                            double refund = currentHand.getBet() / 2;
-                            ui.displayMessage("You surrendered. Refunding half your bet: " + refund);
-                            player.adjustBalance(refund);
+                            surrenderHand(currentHand);
                             turnOver = true;
-                            break;
+                            hasActed = true;
                         } else {
                             ui.displayMessage("You can't surrender now.");
                         }
@@ -280,6 +254,41 @@ public class RoundManager {
         }else {
             ui.displayMessage("Dealer stands with " + dealerHand.getValue());
         }
+    }
+
+    public void splitHands(Hand currentHand) {
+        if (!rules.canSplit(currentHand, player.getBalance())) {
+            ui.displayMessage("Cannot split this hand.");
+            return;
+        }
+        List<Hand> hands = player.getHands();
+        // Remove original hand
+        hands.remove(currentHand);
+        double originalBet = currentHand.getBet();
+        Card c1 = currentHand.getCards().get(0);
+        Card c2 = currentHand.getCards().get(1);
+        // Create hand1
+        Hand hand1 = new Hand();
+        hand1.addCard(c1);
+        hand1.addCard(shoe.drawCard());
+        hand1.setBet(originalBet);
+        // Create hand2
+        Hand hand2 = new Hand();
+        hand2.addCard(c2);
+        hand2.addCard(shoe.drawCard());
+        hand2.setBet(originalBet);
+        // Deduct second bet
+        player.adjustBalance(-originalBet);
+        // Add new hands
+        hands.add(hand1);
+        hands.add(hand2);
+        ui.displayMessage("Hand split into two hands.");
+    }
+
+    public void surrenderHand(Hand currentHand) {
+        if (!rules.canSurrender(currentHand,false)) { ui.displayMessage("Cannot surrender now."); return; }
+        double refund=currentHand.getBet()/2; player.adjustBalance(refund);
+        ui.displayMessage(String.format("You surrendered. Refunded: $%.2f", refund));
     }
 
     public void evaluateResults() {
@@ -375,7 +384,7 @@ public class RoundManager {
 
     }
 
-    private boolean drawAndAddToHand(Hand hand, String actor) {
+    public boolean drawAndAddToHand(Hand hand, String actor) {
         Card card = shoe.drawCard();
         hand.addCard(card);
         ui.displayMessage(String.format("%s drew: %s", actor, card.getShortDisplay()));

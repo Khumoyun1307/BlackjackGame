@@ -1,9 +1,7 @@
-package com.blackjack.ui;
+package test;
 
-import com.blackjack.model.Dealer;
-import com.blackjack.model.Hand;
 import com.blackjack.model.Move;
-import com.blackjack.model.Player;
+import com.blackjack.ui.ConsoleUI;
 
 
 public class TestUI extends ConsoleUI {

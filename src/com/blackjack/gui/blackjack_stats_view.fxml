@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.blackjack.gui.controllers.BlackjackStatsController"
+      spacing="10" alignment="TOP_CENTER" styleClass="root-pane">
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+    <Label text="📈 Blackjack Stats" styleClass="title-label"/>
+    <GridPane hgap="10" vgap="5">
+        <Label text="Total Rounds:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label fx:id="totalRoundsLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="Wins:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label fx:id="winsLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label text="Losses:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Label fx:id="lossesLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label text="Pushes:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <Label fx:id="pushesLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        <Label text="Win Rate:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <Label fx:id="winRateLabel" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        <Label text="Avg Bet:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <Label fx:id="avgBetLabel" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <Label text="Net Profit:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <Label fx:id="netProfitLabel" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+    </GridPane>
+    <Label text="Recent Rounds" styleClass="title-label"/>
+    <ListView fx:id="historyListView" prefHeight="200"/>
+    <Button fx:id="backButton" text="🔙 Back to Blackjack Room" onAction="#handleBack" styleClass="secondary-button"/>
+</VBox>

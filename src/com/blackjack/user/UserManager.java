@@ -8,7 +8,6 @@ import java.util.Map;
 
 public class UserManager {
 
-    private static final String USERS_FILE = "users.txt";
     private final Map<String, PlayerProfile> profiles = new HashMap<>();
     private static final String USERS_DIR = "users";
     private static final String BACKUP_DIR = "backup";

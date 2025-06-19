@@ -1,57 +1,39 @@
 {
   "wins": 4,
-  "losses": 6,
-  "pushes": 1,
-  "totalBet": 630.0,
-  "netProfit": -160.0,
+  "losses": 4,
+  "pushes": 0,
+  "totalBet": 370.0,
+  "netProfit": -270.0,
   "history": [
     {
-      "timestamp": "2025-06-09T05:35:20.264512",
+      "timestamp": "2025-06-18T11:19:32.545430900",
       "handNumber": 1,
-      "bet": 50.0,
-      "payout": 100.0,
-      "result": "Win",
-      "playerValue": 16,
-      "dealerValue": 22
+      "bet": 200.0,
+      "payout": 0.0,
+      "result": "Lose",
+      "playerValue": 15,
+      "dealerValue": 17
     },
     {
-      "timestamp": "2025-06-10T00:22:37.314680500",
+      "timestamp": "2025-06-18T11:21:43.382706300",
       "handNumber": 1,
       "bet": 100.0,
       "payout": 0.0,
       "result": "Lose",
+      "playerValue": 13,
+      "dealerValue": 19
+    },
+    {
+      "timestamp": "2025-06-18T11:30:52.459254100",
+      "handNumber": 1,
+      "bet": 20.0,
+      "payout": 40.0,
+      "result": "Win",
       "playerValue": 18,
-      "dealerValue": 20
+      "dealerValue": 17
     },
     {
-      "timestamp": "2025-06-10T00:23:15.470718900",
-      "handNumber": 1,
-      "bet": 50.0,
-      "payout": 50.0,
-      "result": "Push",
-      "playerValue": 20,
-      "dealerValue": 20
-    },
-    {
-      "timestamp": "2025-06-10T00:23:25.596091300",
-      "handNumber": 1,
-      "bet": 10.0,
-      "payout": 0.0,
-      "result": "Lose",
-      "playerValue": 10,
-      "dealerValue": 18
-    },
-    {
-      "timestamp": "2025-06-10T00:26:33.750458500",
-      "handNumber": 1,
-      "bet": 10.0,
-      "payout": 0.0,
-      "result": "Lose",
-      "playerValue": 15,
-      "dealerValue": 18
-    },
-    {
-      "timestamp": "2025-06-10T00:26:57.163580100",
+      "timestamp": "2025-06-18T11:43:49.001129700",
       "handNumber": 1,
       "bet": 10.0,
       "payout": 20.0,
@@ -60,49 +42,40 @@
       "dealerValue": 18
     },
     {
-      "timestamp": "2025-06-10T00:28:51.476701",
+      "timestamp": "2025-06-18T11:55:51.831452100",
       "handNumber": 1,
-      "bet": 100.0,
-      "payout": 200.0,
+      "bet": 10.0,
+      "payout": 20.0,
       "result": "Win",
-      "playerValue": 21,
-      "dealerValue": 18
+      "playerValue": 19,
+      "dealerValue": 26
     },
     {
-      "timestamp": "2025-06-10T00:29:43.526406600",
+      "timestamp": "2025-06-18T11:55:53.767042700",
+      "handNumber": 2,
+      "bet": 10.0,
+      "payout": 20.0,
+      "result": "Win",
+      "playerValue": 19,
+      "dealerValue": 26
+    },
+    {
+      "timestamp": "2025-06-18T12:14:14.882265800",
       "handNumber": 1,
-      "bet": 50.0,
+      "bet": 10.0,
       "payout": 0.0,
       "result": "Lose",
       "playerValue": 18,
       "dealerValue": 19
     },
     {
-      "timestamp": "2025-06-10T00:59:59.463618500",
+      "timestamp": "2025-06-18T23:23:35.781712",
       "handNumber": 1,
-      "bet": 100.0,
+      "bet": 10.0,
       "payout": 0.0,
       "result": "Lose",
       "playerValue": 17,
-      "dealerValue": 20
-    },
-    {
-      "timestamp": "2025-06-10T01:03:04.759090600",
-      "handNumber": 1,
-      "bet": 50.0,
-      "payout": 100.0,
-      "result": "Win",
-      "playerValue": 19,
-      "dealerValue": 23
-    },
-    {
-      "timestamp": "2025-06-10T01:03:45.283036",
-      "handNumber": 1,
-      "bet": 100.0,
-      "payout": 0.0,
-      "result": "Lose",
-      "playerValue": 16,
-      "dealerValue": 21
+      "dealerValue": 19
     }
   ]
 }

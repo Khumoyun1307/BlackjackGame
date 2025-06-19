@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.blackjack.gui.controllers.DashboardController"
+      spacing="15" alignment="CENTER" styleClass="root-pane">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <Label fx:id="welcomeLabel" styleClass="message-label"/>
+    <Label text="🎰 Casino Dashboard" styleClass="title-label"/>
+    <Button fx:id="playBlackjackButton" text="Play Blackjack" onAction="#handlePlayBlackjack" styleClass="primary-button" />
+    <Button fx:id="viewStatsButton" text="Casino Stats" onAction="#handleViewStats" styleClass="secondary-button" />
+    <Button fx:id="settingsButton" text="Settings" onAction="#handleSettings" styleClass="secondary-button" />
+    <Button fx:id="logoutButton" text="Log Out" onAction="#handleLogout" styleClass="danger-button" />
+</VBox>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.blackjack.gui.controllers.GameTableController"
+            styleClass="root-pane">
+    <!-- Top: Bet & Insurance -->
+    <top>
+        <VBox spacing="10" alignment="CENTER">
+            <HBox spacing="10" alignment="CENTER">
+                <Label text="Bet:"/>
+                <TextField fx:id="betField" promptText="10 - 1000"/>
+                <Button fx:id="placeBetButton" text="Place Bet" styleClass="primary-button"/>
+                <HBox fx:id="insuranceBox">
+                    <TextField fx:id="insuranceField" promptText="Insurance"/>
+                    <Button fx:id="placeInsuranceButton" text="Place Insurance"/>
+                </HBox>
+            </HBox>
+            <HBox fx:id="insurancePane" spacing="10" alignment="CENTER" visible="false">
+                <Label text="Insurance?"/>
+                <Button fx:id="insureYesButton" text="Yes" styleClass="secondary-button"/>
+                <Button fx:id="insureNoButton" text="No" styleClass="secondary-button"/>
+            </HBox>
+            <Label fx:id="currentBetLabel" styleClass="message-label"/>
+        </VBox>
+    </top>
+
+    <!-- Center: Dealer area -->
+    <center>
+        <VBox spacing="10" alignment="CENTER">
+            <Label text="Dealer" styleClass="title-label"/>
+            <HBox fx:id="dealerCardsBox" spacing="10" alignment="CENTER"/>
+            <Label fx:id="dealerValueLabel" styleClass="message-label"/>
+        </VBox>
+    </center>
+
+    <!-- Bottom: Player hands, actions, and status -->
+    <bottom>
+        <VBox spacing="10" alignment="CENTER">
+            <VBox fx:id="playerSection" spacing="5" visible="false">
+                <Label text="Your Hand(s)" styleClass="title-label"/>
+                <VBox fx:id="playerHandsBox" spacing="10" alignment="CENTER"/>
+            </VBox>
+            <HBox fx:id="actionButtonsBox" spacing="10" alignment="CENTER">
+                <Button fx:id="hitButton" text="Hit" styleClass="primary-button" disable="true"/>
+                <Button fx:id="stayButton" text="Stay" styleClass="secondary-button" disable="true"/>
+                <Button fx:id="doubleButton" text="Double" styleClass="secondary-button" disable="true"/>
+                <Button fx:id="splitButton" text="Split" styleClass="secondary-button" disable="true"/>
+                <Button fx:id="surrenderButton" text="Surrender" styleClass="secondary-button" disable="true"/>
+                <Button fx:id="exitButton" text="Exit Round" styleClass="danger-button"/>
+            </HBox>
+            <HBox spacing="20" alignment="CENTER">
+                <Label fx:id="balanceLabel" styleClass="message-label"/>
+                <Button fx:id="newRoundButton" text="New Round" styleClass="primary-button" disable="true"/>
+                <Button fx:id="backMenuButton" text="Back to Menu" styleClass="secondary-button"/>
+            </HBox>
+            <Label text="Status" styleClass="title-label" style="-fx-font-size:16px;"/>
+            <ScrollPane fitToWidth="true" fitToHeight="true" prefHeight="150">
+                <TextArea fx:id="statusArea" editable="false" wrapText="true" styleClass="message-label"/>
+            </ScrollPane>
+        </VBox>
+    </bottom>
+</BorderPane>

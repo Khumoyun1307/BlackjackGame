@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A simple, polished login form -->
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.blackjack.gui.controllers.LoginController"
+      spacing="10" alignment="CENTER"
+      styleClass="root-pane">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <Label text="🎲 Casino Login" styleClass="title-label"/>
+    <TextField fx:id="usernameField" promptText="Username" styleClass="text-field" />
+    <PasswordField fx:id="passwordField" promptText="Password" styleClass="text-field" />
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="loginButton" text="Login" onAction="#handleLogin" styleClass="primary-button" />
+        <Button fx:id="signupButton" text="Sign Up" onAction="#handleSignup" styleClass="secondary-button" />
+    </HBox>
+    <Label fx:id="messageLabel" wrapText="true" styleClass="message-label" />
+</VBox>

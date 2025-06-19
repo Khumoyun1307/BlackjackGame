@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.blackjack.gui.controllers.ShoeChoiceController"
+      spacing="15" alignment="CENTER" styleClass="root-pane">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <Label text="Select Shoe Size" styleClass="title-label"/>
+    <HBox spacing="20" alignment="CENTER">
+        <Button fx:id="twoDeckButton" text="2 Decks" onAction="#handleTwoDecks" styleClass="primary-button" />
+        <Button fx:id="sixDeckButton" text="6 Decks" onAction="#handleSixDecks" styleClass="primary-button" />
+    </HBox>
+    <Button fx:id="backButton" text="🔙 Back" onAction="#handleBack" styleClass="secondary-button" />
+</VBox>

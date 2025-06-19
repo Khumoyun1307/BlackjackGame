@@ -8,7 +8,6 @@ import com.blackjack.model.Player;
 import com.blackjack.model.Shoe;
 import com.blackjack.stats.GameStats;
 import com.blackjack.ui.GameUI;
-import com.blackjack.ui.TestUI;
 
 public class SplitAutoTest {
     public static void main(String[] args) {
