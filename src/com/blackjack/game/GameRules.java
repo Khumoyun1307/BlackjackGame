@@ -7,6 +7,9 @@ import java.util.List;
 
 public class GameRules {
 
+    public static final int MIN_BET = 10;
+    public static final int MAX_BET = 1000;
+
     public boolean canHit(Hand playerHand) {
         return !isBust(playerHand);
     }

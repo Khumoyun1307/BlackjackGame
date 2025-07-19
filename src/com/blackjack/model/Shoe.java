@@ -59,5 +59,9 @@ public class Shoe {
     public void prependCard(Card card) {
         cards.add(0, card); // Add to top of the deck
     }
+
+    public int getTotalDecks() {
+        return totalDecks;
+    }
 }
 

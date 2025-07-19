@@ -1,20 +1,26 @@
 package com.blackjack.gui.controllers;
 
+import com.blackjack.game.RoundEventListener;
 import com.blackjack.game.RoundManager;
-import com.blackjack.game.GameRules;
-import com.blackjack.gui.JavaFXGameUI;
 import com.blackjack.model.Card;
-import com.blackjack.model.Dealer;
 import com.blackjack.model.Hand;
+import com.blackjack.model.Move;
+import com.blackjack.stats.RoundSummary;
+import com.blackjack.user.PlayerProfile;
 import com.blackjack.model.Player;
+import com.blackjack.model.Dealer;
 import com.blackjack.model.Shoe;
+import com.blackjack.game.GameRules;
 import com.blackjack.stats.GameStats;
 import com.blackjack.stats.StatsManager;
-import com.blackjack.ui.GameUI;
-import com.blackjack.user.PlayerProfile;
+
 import com.blackjack.gui.ApplicationContext;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -24,306 +30,352 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.List;
 
-public class GameTableController {
-    // Inline bet controls
-    @FXML private TextField betField;
-    @FXML private Button placeBetButton;
-    @FXML private HBox insuranceBox;
-    @FXML private TextField insuranceField;
-    @FXML private Button placeInsuranceButton;
-
-    // Card display
+public class GameTableController implements RoundEventListener {
+    public ScrollPane playerHandsScroll;
     @FXML private HBox dealerCardsBox;
-    @FXML private Label dealerValueLabel;
-    @FXML private VBox playerHandsBox;
-
-    // Action buttons
-    @FXML private Button hitButton, stayButton, doubleButton, splitButton, surrenderButton, exitButton;
-
-    // Round controls & status
-    @FXML private Button newRoundButton, backMenuButton;
-    @FXML private Label balanceLabel;
+    @FXML private VBox playerHandsContainer;
+    @FXML private Label balanceLabel, dealerValueLabel;
     @FXML private TextArea statusArea;
+    @FXML private TextField betField, insuranceField;
+    @FXML private Button placeBetButton, placeInsuranceButton;
+    @FXML private HBox insuranceBox;
+    @FXML private Button hitButton, stayButton, doubleButton, splitButton, surrenderButton, exitButton;
+    @FXML private Button continueButton, backMenuButton;
 
-    private GameUI gameUI;
+    private int activeHandIndex = -1;
+
     private RoundManager roundManager;
-    private Player player;
-    private Dealer dealer;
-    private GameRules rules;
-    private Shoe shoe;
-    private GameStats stats;
-
-    /** Called once after loading to set up game state for a given deck count. */
-    public void initGame(int decks) {
-        // 1) Create your JavaFX-based UI impl:
-        this.gameUI = new JavaFXGameUI();
-
-        // 2) Existing setup:
-        this.rules = new GameRules();
-        PlayerProfile profile = ApplicationContext.getProfile();
-        this.stats = StatsManager.loadStats(profile.getUsername());
-        this.player = new Player(profile.getUsername(), profile.getBalance());
-        this.dealer = new Dealer();
-        this.shoe = new Shoe(decks);
-        this.shoe.shuffle();
-
-        // 3) Pass the real UI into RoundManager, not null:
-        this.roundManager = new RoundManager(player, dealer, shoe, rules, gameUI, stats);
-
-        // 4) Initialize controls:
-        insuranceBox.setVisible(false);
-        disableActionButtons(true);
-
-        betField.setDisable(true);
-        placeBetButton.setDisable(true);
-        // Enable New Round once the scene loads:
-        newRoundButton.setDisable(false);
-
-        updateBalance();
-    }
 
     @FXML
-    private void initialize() {
-        newRoundButton.setOnAction(e -> startNewRound());
-        placeBetButton.setOnAction(e -> handlePlaceBet());
-        placeInsuranceButton.setOnAction(e -> handlePlaceInsurance());
-        hitButton.setOnAction(e -> playerHit());
-        stayButton.setOnAction(e -> playerStay());
-        doubleButton.setOnAction(e -> playerDouble());
-        splitButton.setOnAction(e -> playerSplit());
-        surrenderButton.setOnAction(e -> playerSurrender());
-        exitButton.setOnAction(e -> endRound());
-        backMenuButton.setOnAction(e -> backToMenu());
-    }
-
-    private void startNewRound() {
-        statusArea.clear();
-        clearCardBoxes();
+    public void initialize() {
+        disableAll();
         insuranceBox.setVisible(false);
-        disableActionButtons(true);
 
-        betField.clear();
-        betField.setDisable(false);
-        placeBetButton.setDisable(false);
-    }
+        placeBetButton.setOnAction(e -> roundManager.placeBet(parse(betField)));
+        placeInsuranceButton.setOnAction(e -> {
+            insuranceBox.setVisible(false);
+            roundManager.placeInsurance(parse(insuranceField));
+        });
 
-    private void handlePlaceBet() {
-        double minBet = 10, maxBet = 1000;
-        double bet;
-        try {
-            bet = Double.parseDouble(betField.getText());
-        } catch (NumberFormatException ex) {
-            appendStatus("Invalid bet amount.");
-            return;
-        }
-        if (bet < minBet || bet > maxBet) {
-            appendStatus(String.format("Bet must be between $%.2f and $%.2f.", minBet, maxBet));
-            return;
-        }
+        hitButton.setOnAction(e -> roundManager.playerMove(Move.HIT));
+        stayButton.setOnAction(e -> roundManager.playerMove(Move.STAY));
+        doubleButton.setOnAction(e -> roundManager.playerMove(Move.DOUBLE));
+        splitButton.setOnAction(e -> roundManager.playerMove(Move.SPLIT));
+        surrenderButton.setOnAction(e -> roundManager.playerMove(Move.SURRENDER));
+        exitButton.setOnAction(e -> roundManager.playerMove(Move.EXIT));
 
-        // Set up player hand and bet
-        player.resetHands();
-        Hand playerHand = new Hand();
-        player.addHand(playerHand);
-        player.placeBet(playerHand, bet);
-        appendStatus(String.format("Bet placed: $%.2f", bet));
+        continueButton.setOnAction(e -> startRound());
 
-        // Deal initial cards
-        roundManager.dealInitialCards(playerHand);
-        updateTableView();
-        appendStatus("Initial deal: You " + playerHand.getDisplayValue());
-
-        // Offer insurance if dealer hole card is Ace
-        Card hole = dealer.getHand().getCards().get(0);
-        if (hole.getRank() == Card.Rank.ACE && !rules.isBlackjack(playerHand)) {
-            insuranceBox.setVisible(true);
-        } else {
-            proceedAfterInsurance(playerHand);
-        }
-
-        // Disable bet controls
-        betField.setDisable(true);
-        placeBetButton.setDisable(true);
-    }
-
-    private void handlePlaceInsurance() {
-        double ins;
-        try {
-            ins = Double.parseDouble(insuranceField.getText());
-        } catch (Exception ex) {
-            appendStatus("Invalid insurance amount.");
-            return;
-        }
-        Hand ph = player.getHands().get(0);
-        player.adjustBalance(-ins);
-        ph.setInsuranceBet(ins);
-        appendStatus(String.format("Insurance bet placed: $%.2f", ins));
-        insuranceBox.setVisible(false);
-        proceedAfterInsurance(ph);
-    }
-
-    /** Checks for blackjack, otherwise enables player action buttons. */
-    private void proceedAfterInsurance(Hand playerHand) {
-        boolean playerBJ = rules.isBlackjack(playerHand);
-        boolean dealerBJ = rules.isBlackjack(dealer.getHand());
-
-        if (playerBJ || dealerBJ) {
-            // Reveal dealer hand
-            updateTableView();
-            if (playerBJ && dealerBJ) {
-                appendStatus("Push: both have Blackjack.");
-                player.adjustBalance(playerHand.getBet());
-            } else if (playerBJ) {
-                appendStatus("Blackjack! You win.");
-                player.adjustBalance(rules.getBlackjackPayout(playerHand));
-            } else {
-                appendStatus("Dealer has Blackjack. You lose.");
+        backMenuButton.setOnAction(e -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass()
+                        .getResource("/com/blackjack/gui/blackjack_menu_view.fxml"));
+                Scene s = new Scene(loader.load());
+                Stage st = (Stage) backMenuButton.getScene().getWindow();
+                st.setTitle("Blackjack Room");
+                st.setScene(s);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-            endRound();
-        } else {
-            disableActionButtons(false);
-            appendStatus("Your turn.");
-        }
-        updateBalance();
+        });
     }
 
-    private void playerHit() {
-        Hand h = player.getHands().get(0);
-        boolean bust = roundManager.drawAndAddToHand(h, "You");
-        updateTableView();
-        appendStatus("You hit. Value: " + h.getDisplayValue());
-        if (bust) {
-            appendStatus("You busted.");
-            endRound();
-        }
-    }
-
-    private void playerStay() {
-        appendStatus("You stand at " + player.getHands().get(0).getDisplayValue());
-        roundManager.dealerTurn();
-        updateTableView();
-        appendStatus("Dealer stands at " + dealer.getHand().getDisplayValue());
-        roundManager.evaluateResults();
-        endRound();
-    }
-
-    private void playerDouble() {
-        Hand h = player.getHands().get(0);
-        if (rules.canDouble(h, player.getBalance())) {
-            player.adjustBalance(-h.getBet());
-            roundManager.drawAndAddToHand(h, "You");
-            h.setBet(h.getBet() * 2);
-            updateTableView();
-            appendStatus("You doubled. Bet now $" + String.format("%.2f", h.getBet()));
-            if (!rules.isBust(h)) playerStay();
-            else appendStatus("You busted on double.");
-        }
-    }
-
-    private void playerSplit() {
-        Hand h = player.getHands().get(0);
-        roundManager.splitHands(h);
-        updateTableView();
-        appendStatus("Hand split.");
-    }
-
-    private void playerSurrender() {
-        Hand h = player.getHands().get(0);
-        roundManager.surrenderHand(h);
-        updateTableView();
-        appendStatus("You surrendered. Half bet returned.");
-        endRound();
-    }
-
-    /** Ends the round: disables actions and persists state. */
-    private void endRound() {
-        disableActionButtons(true);
-
-        // Persist balance & stats
+    public void initGame(int decks) {
         PlayerProfile profile = ApplicationContext.getProfile();
-        profile.setBalance(player.getBalance());
-        ApplicationContext.getUserManager().saveProfile(profile);
-        StatsManager.saveStats(profile.getUsername(), stats);
+        Player player = new Player(profile.getUsername(), profile.getBalance());
+        Dealer dealer = new Dealer();
+        Shoe shoe = new Shoe(decks);
+        shoe.shuffle();
 
-        appendStatus("Round complete.");
-        updateBalance();
+        shoe.prependCard(new Card(Card.Rank.EIGHT, Card.Suit.DIAMONDS)); // re-split 2nd card
+        shoe.prependCard(new Card(Card.Rank.EIGHT, Card.Suit.HEARTS));   // re-split 1st card
+        shoe.prependCard(new Card(Card.Rank.EIGHT, Card.Suit.DIAMONDS)); // split 2nd card
+        shoe.prependCard(new Card(Card.Rank.EIGHT, Card.Suit.CLUBS));    // split 1st card
+
+        shoe.prependCard(new Card(Card.Rank.KING,  Card.Suit.HEARTS));   // dealer up-card
+        shoe.prependCard(new Card(Card.Rank.EIGHT, Card.Suit.HEARTS));   // player 2nd card
+        shoe.prependCard(new Card(Card.Rank.FIVE,  Card.Suit.CLUBS));    // dealer hole-card
+        shoe.prependCard(new Card(Card.Rank.EIGHT, Card.Suit.SPADES));   // player 1st card
+
+        GameRules rules = new GameRules();
+        GameStats stats = StatsManager.loadStats(profile.getUsername());
+        updateBalance(player.getBalance());
+
+        this.roundManager = new RoundManager(player, dealer, shoe, rules, stats, this);
     }
 
-    private void appendStatus(String msg) {
-        statusArea.appendText(msg + "\n");
-    }
+    void startRound() {
+        // 1) Disable all controls & clear status
+        disableAll();
+        statusArea.clear();
 
-    private String imagePathFor(Card c) {
-        String rank = c.getRank().toString().toLowerCase();
-        // if you ever have numeric ranks, map "ten" -> "ten" etc.
-        return String.format("/cards/%s_of_%s.png",
-                rank,
-                c.getSuit().toString().toLowerCase());
-    }
-
-    private void updateTableView() {
+        // 2) **CLEAR OUT EVERY CARD** before we deal again
+        //    Do this directly, not inside Platform.runLater,
+        //    so we don’t race with render(...)’s own clear.
+        playerHandsContainer.getChildren().clear();
         dealerCardsBox.getChildren().clear();
-        for (Card c : dealer.getHand().getCards()) {
-            String path = imagePathFor(c);
-            URL url = getClass().getResource(path);
-            if (url == null) {
-                appendStatus("⚠️ Resource not found: " + path);
-                continue;
-            }
-            ImageView iv = new ImageView(new Image(url.toExternalForm()));
-            iv.setFitWidth(80); iv.setPreserveRatio(true);
-            dealerCardsBox.getChildren().add(iv);
-        }
-        dealerValueLabel.setText("Dealer: " + dealer.getHand().getDisplayValue());
+        dealerValueLabel.setText("");
 
-        playerHandsBox.getChildren().clear();
-        for (Hand hand : player.getHands()) {
-            HBox hb = new HBox(5);
-            for (Card c : hand.getCards()) {
-                String path = imagePathFor(c);
-                URL url = getClass().getResource(path);
-                if (url == null) {
-                    appendStatus("⚠️ Resource not found: " + path);
+        // 3) Now kick off the new round
+        roundManager.startRound();
+    }
+
+
+
+    private double parse(TextField tf) {
+        try {
+            return Double.parseDouble(tf.getText().trim());
+        } catch (Exception e) {
+            append("Invalid number");
+            return -1;
+        }
+    }
+
+    private void disableAll() {
+        Platform.runLater(() -> {
+            betField.setDisable(true);
+            placeBetButton.setDisable(true);
+            insuranceBox.setVisible(false);
+            insuranceField.setDisable(true);
+            placeInsuranceButton.setDisable(true);
+            hitButton.setDisable(true);
+            stayButton.setDisable(true);
+            doubleButton.setDisable(true);
+            splitButton.setDisable(true);
+            surrenderButton.setDisable(true);
+            exitButton.setDisable(true);
+            continueButton.setDisable(true);
+        });
+    }
+
+    private void append(String msg) {
+        Platform.runLater(() -> statusArea.appendText(msg + "\n"));
+    }
+
+    private void updateBalance(double bal) {
+        Platform.runLater(() -> balanceLabel.setText(String.format("💰 $%.2f", bal)));
+    }
+
+    private void renderPlayerHands(List<Hand> hands) {
+        int active = activeHandIndex;
+        Platform.runLater(() -> {
+            playerHandsContainer.getChildren().clear();
+            for (int i = 0; i < hands.size(); i++) {
+                HBox handBox = new HBox(10);
+                handBox.setAlignment(Pos.CENTER);
+
+                // give every row a light border...
+                handBox.setStyle("-fx-border-color: #ccc; -fx-border-radius: 4; -fx-padding: 5;");
+                // ...and highlight the active one
+                if (i == active) {
+                    handBox.setStyle(
+                            "-fx-border-color: #448aff; -fx-border-width: 2; "
+                                    + "-fx-border-radius: 4; -fx-padding: 5;"
+                    );
+                }
+
+                for (Card c : hands.get(i).getCards()) {
+                    String path = String.format(
+                            "/cards/%s_of_%s.png",
+                            c.getRank().toString().toLowerCase(),
+                            c.getSuit().toString().toLowerCase()
+                    );
+                    URL imgUrl = getClass().getResource(path);
+                    if (imgUrl == null) {
+                        append("⚠️ Missing image: " + path);
+                        continue;
+                    }
+                    ImageView iv = new ImageView(new Image(imgUrl.toExternalForm()));
+                    iv.setFitWidth(80);
+                    iv.setPreserveRatio(true);
+                    handBox.getChildren().add(iv);
+                }
+                playerHandsContainer.getChildren().add(handBox);
+            }
+        });
+    }
+
+    private void render(HBox box, List<Card> cards) { 
+        Platform.runLater(() -> {
+            box.getChildren().clear();
+            for (Card c : cards) {
+                String path = String.format("/cards/%s_of_%s.png",
+                        c.getRank().toString().toLowerCase(),
+                        c.getSuit().toString().toLowerCase());
+
+                // --- begin safe-loading patch ---
+                URL imgUrl = getClass().getResource(path);
+                if (imgUrl == null) {
+                    // log in the status area so you can see what file it's looking for
+                    append("⚠️ Missing image: " + path);
                     continue;
                 }
-                ImageView iv = new ImageView(new Image(url.toExternalForm()));
-                iv.setFitWidth(80); iv.setPreserveRatio(true);
-                hb.getChildren().add(iv);
+                ImageView iv = new ImageView(new Image(imgUrl.toExternalForm()));
+                // --- end safe-loading patch ---
+
+                iv.setFitWidth(80);
+                iv.setPreserveRatio(true);
+                box.getChildren().add(iv);
             }
-            hb.getChildren().add(new Label(String.format("Bet: $%.2f", hand.getBet())));
-            playerHandsBox.getChildren().add(hb);
+        });
+    }
+
+    // --- RoundEventListener callbacks ---
+
+    @Override
+    public void onShoeShuffled(int decks) {
+        append("Shuffled " + decks + " decks.");
+    }
+
+    @Override
+    public void onBetRequested(double min, double max) {
+        Platform.runLater(() -> {
+            betField.clear();
+            betField.setDisable(false);
+            placeBetButton.setDisable(false);
+            append(String.format("Place bet: $%.2f - $%.2f", min, max));
+        });
+    }
+
+    @Override
+    public void onBetPlaced(double amt) {
+        append("Bet: $" + String.format("%.2f", amt));
+        updateBalance(roundManager.getPlayer().getBalance());
+    }
+
+    @Override
+    public void onInitialDeal(List<Card> playerCards, Card dealerUpCard) {
+        renderPlayerHands(roundManager.getPlayer().getHands());
+        render(dealerCardsBox, List.of(dealerUpCard));
+        // Show dealer’s up-card value
+        dealerValueLabel.setText("Dealer: " + dealerUpCard.getValue());
+        append("Initial deal done.");
+    }
+
+    @Override
+    public void onOfferInsurance(double max) {
+        Platform.runLater(() -> {
+            insuranceBox.setVisible(true);
+            insuranceField.clear();
+            insuranceField.setDisable(false);
+            placeInsuranceButton.setDisable(false);
+            append("Offer insurance up to $" + String.format("%.2f", max));
+        });
+    }
+
+    @Override
+    public void onInsurancePlaced(double amt) {
+        append("Insurance: $" + String.format("%.2f", amt));
+    }
+
+    @Override
+    public void onPlayerTurnStart(int idx, Hand hand,
+                                  boolean canHit, boolean canDouble,
+                                  boolean canSplit, boolean canSurrender) {
+        // 1) Record which hand is now active
+        this.activeHandIndex = idx;
+
+        // 2) Re-draw all of the hands (so you see the new highlight)
+        renderPlayerHands(roundManager.getPlayer().getHands());
+
+        // 3) Enable/disable your buttons _and_ scroll to the active hand
+        Platform.runLater(() -> {
+            // enable the controls for the current hand
+            hitButton.setDisable(!canHit);
+            stayButton.setDisable(false);
+            doubleButton.setDisable(!canDouble);
+            splitButton.setDisable(!canSplit);
+            surrenderButton.setDisable(!canSurrender);
+            exitButton.setDisable(false);
+
+            // now auto-scroll so the active hand is in view
+            if (playerHandsContainer.getChildren().size() > idx) {
+                Node activeNode = playerHandsContainer.getChildren().get(idx);
+                Bounds contentBounds = playerHandsContainer.getBoundsInLocal();
+                Bounds nodeBounds    = activeNode.getBoundsInParent();
+                Bounds viewportBounds= playerHandsScroll.getViewportBounds();
+
+                // compute a vvalue between 0 and 1
+                double v = (nodeBounds.getMinY())
+                        / (contentBounds.getHeight() - viewportBounds.getHeight());
+                playerHandsScroll.setVvalue(Math.min(Math.max(v, 0), 1));
+            }
+        });
+
+        // 4) Log for the player
+        append("Your turn: Hand " + (idx+1) + " (value " + hand.getValue() + ")");
+    }
+
+    @Override
+    public void onCardDrawn(String actor, Card card, int idx, Hand updatedHand) {
+        if (actor.equals("You")) {
+            renderPlayerHands(roundManager.getPlayer().getHands());
+        } else {
+            // updatedHand is dealer's hand here
+            render(dealerCardsBox, updatedHand.getCards());
+            dealerValueLabel.setText("Dealer: " + updatedHand.getValue());
         }
+        append(actor + " drew: " + card.getShortDisplay());
     }
 
-    private void disableActionButtons(boolean disable) {
-        hitButton.setDisable(disable);
-        stayButton.setDisable(disable);
-        doubleButton.setDisable(disable);
-        splitButton.setDisable(disable);
-        surrenderButton.setDisable(disable);
-        placeInsuranceButton.setDisable(disable);
+    @Override
+    public void onDealerTurnStart() {
+        append("Dealer's turn");
+        // disable all action buttons at dealer turn
+        Platform.runLater(() -> {
+            hitButton.setDisable(true);
+            stayButton.setDisable(true);
+            doubleButton.setDisable(true);
+            splitButton.setDisable(true);
+            surrenderButton.setDisable(true);
+            exitButton.setDisable(true);
+        });
     }
 
-    private void clearCardBoxes() {
-        dealerCardsBox.getChildren().clear();
-        playerHandsBox.getChildren().clear();
+    @Override
+    public void onDealerCardDrawn(Card card, Hand updatedDealerHand) {
+        render(dealerCardsBox, updatedDealerHand.getCards());
+        dealerValueLabel.setText("Dealer: " + updatedDealerHand.getValue());
+        append("Dealer drew: " + card.getShortDisplay());
     }
 
-    private void updateBalance() {
-        balanceLabel.setText(String.format("💰 Balance: $%.2f", player.getBalance()));
+    @Override
+    public void onRoundResult(RoundSummary summary) {
+        append(String.format(
+                "Hand %d %s (bet $%.2f → $%.2f). You:%d D:%d",
+                summary.getHandNumber(),
+                summary.getResult(),
+                summary.getBet(),
+                summary.getPayout(),
+                summary.getPlayerValue(),
+                summary.getDealerValue()
+        ));
     }
 
-    private void backToMenu() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/blackjack/gui/blackjack_menu_view.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) backMenuButton.getScene().getWindow();
-            stage.setTitle("Blackjack Room");
-            stage.setScene(scene);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    @Override
+    public void onBalanceUpdated(double newBalance) {
+        updateBalance(newBalance);
+    }
+
+    @Override
+    public void onLog(String message) {
+        append(message);
+    }
+
+
+    @Override
+    public void onRevealDealerCard(List<Card> dealerCards) {
+        render(dealerCardsBox, dealerCards);
+        int total = dealerCards.stream().mapToInt(Card::getValue).sum();
+        dealerValueLabel.setText("Dealer: " + total);
+        append("Dealer reveals hole card.");
+    }
+
+    @Override
+    public void onSessionContinuationRequested() {
+        Platform.runLater(() -> continueButton.setDisable(false));
+        append("Click Continue to play next round or exit.");
     }
 }

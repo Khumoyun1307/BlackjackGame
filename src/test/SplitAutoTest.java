@@ -1,7 +1,9 @@
 package test;
 
 import com.blackjack.game.GameRules;
+import com.blackjack.game.RoundEventListener;
 import com.blackjack.game.RoundManager;
+import com.blackjack.gui.controllers.GameTableController;
 import com.blackjack.model.Card;
 import com.blackjack.model.Dealer;
 import com.blackjack.model.Player;
@@ -26,8 +28,8 @@ public class SplitAutoTest {
         shoe.prependCard(new Card(Card.Rank.EIGHT, Card.Suit.DIAMONDS)); // Player 1st
 
         GameUI ui = new TestUI();
-        RoundManager manager = new RoundManager(player, dealer, shoe, rules, ui, stats);
+        RoundManager manager = new RoundManager(player, dealer, shoe, rules, stats, new GameTableController());
 
-        manager.playRound(); // This will simulate the split
+        manager.startRound(); // This will simulate the split
     }
 }

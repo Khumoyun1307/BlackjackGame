@@ -38,16 +38,15 @@ public class ShoeChoiceController {
     }
 
     private void startGameWithShoe(int decks) throws Exception {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/com/blackjack/gui/game_table_view.fxml")
-        );
-        Scene scene = new Scene(loader.load());
+        // in ShoeChoiceController.startGameWithShoe():
         Stage stage = (Stage) twoDeckButton.getScene().getWindow();
-        stage.setTitle("Blackjack Table");
-        // Initialize controller
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/blackjack/gui/game_table_view.fxml"));
+        Scene scene = new Scene(loader.load());
         GameTableController controller = loader.getController();
         controller.initGame(decks);
+        controller.startRound();          // <- begin the first round
         stage.setScene(scene);
+
     }
 
 

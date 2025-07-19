@@ -1,5 +1,6 @@
 package com.blackjack.game;
 
+import com.blackjack.gui.controllers.GameTableController;
 import com.blackjack.model.Dealer;
 import com.blackjack.stats.GameStats;
 import com.blackjack.stats.RoundSummary;
@@ -19,6 +20,7 @@ public class BlackjackRoom {
     private final GameStats stats;
     private PlayerProfile profile;
     private final UserManager userManager;
+    private final RoundEventListener roundEventListener = new GameTableController();
 
     public BlackjackRoom(GameUI ui, GameRules rules, Dealer dealer, PlayerProfile profile, UserManager userManager, GameStats stats) {
         this.ui = ui;
@@ -27,6 +29,7 @@ public class BlackjackRoom {
         this.stats = stats;
         this.profile = profile;
         this.userManager = userManager;
+
     }
 
     public void launch() {
@@ -38,7 +41,7 @@ public class BlackjackRoom {
 
             switch (choice) {
                 case 1 -> {
-                    BlackjackGame game = new BlackjackGame(ui, rules, profile, dealer, stats, userManager);
+                    BlackjackGame game = new BlackjackGame(ui, rules, profile, dealer, stats, userManager, roundEventListener);
                     game.start();
                     profile.setBalance(game.getPlayer().getBalance());
                     userManager.saveProfile(profile);

@@ -18,18 +18,20 @@ public class BlackjackGame {
     private final GameStats stats;
     private final PlayerProfile profile;
     private final UserManager userManager;
+    private final RoundEventListener roundListener;
 
 
     private Shoe shoe;
     private boolean keepPlaying;
 
-    public BlackjackGame(GameUI ui, GameRules rules, PlayerProfile profile, Dealer dealer, GameStats stats, UserManager userManager) {
+    public BlackjackGame(GameUI ui, GameRules rules, PlayerProfile profile, Dealer dealer, GameStats stats, UserManager userManager, RoundEventListener roundListener) {
         this.ui = ui;
         this.rules = rules;
         this.profile = profile;
         this.player = new Player(profile.getUsername(), profile.getBalance()); // <== use profile's balance
         this.dealer = dealer;
         this.stats = stats;
+        this.roundListener = roundListener;
         this.keepPlaying = true;
         this.userManager = userManager;
     }
@@ -53,11 +55,11 @@ public class BlackjackGame {
     }
 
     private void playUntilPlayerQuitsOrReshuffles() {
-        RoundManager roundManager = new RoundManager(player, dealer, shoe, rules, ui, stats);
+        RoundManager roundManager = new RoundManager(player, dealer, shoe, rules, stats, roundListener);
 
         while (true) {
             ui.displayMessage("\n--- New Round ---");
-            roundManager.playRound();
+            roundManager.startRound();
             profile.setBalance(player.getBalance());
             userManager.saveProfile(profile);
             StatsManager.saveStats(profile.getUsername(), stats);

@@ -14,53 +14,60 @@
                 <Label text="Bet:"/>
                 <TextField fx:id="betField" promptText="10 - 1000"/>
                 <Button fx:id="placeBetButton" text="Place Bet" styleClass="primary-button"/>
-                <HBox fx:id="insuranceBox">
+                <HBox fx:id="insuranceBox" spacing="5" visible="false">
                     <TextField fx:id="insuranceField" promptText="Insurance"/>
-                    <Button fx:id="placeInsuranceButton" text="Place Insurance"/>
+                    <Button fx:id="placeInsuranceButton" text="Place Insurance" styleClass="primary-button"/>
                 </HBox>
             </HBox>
-            <HBox fx:id="insurancePane" spacing="10" alignment="CENTER" visible="false">
-                <Label text="Insurance?"/>
-                <Button fx:id="insureYesButton" text="Yes" styleClass="secondary-button"/>
-                <Button fx:id="insureNoButton" text="No" styleClass="secondary-button"/>
-            </HBox>
-            <Label fx:id="currentBetLabel" styleClass="message-label"/>
         </VBox>
     </top>
 
-    <!-- Center: Dealer area -->
+    <!-- Center: Dealer and Player area -->
     <center>
-        <VBox spacing="10" alignment="CENTER">
-            <Label text="Dealer" styleClass="title-label"/>
-            <HBox fx:id="dealerCardsBox" spacing="10" alignment="CENTER"/>
-            <Label fx:id="dealerValueLabel" styleClass="message-label"/>
+        <VBox spacing="15" alignment="CENTER">
+            <VBox spacing="5" alignment="CENTER">
+                <Label text="Dealer" styleClass="title-label"/>
+                <HBox fx:id="dealerCardsBox" spacing="10" alignment="CENTER"/>
+                <Label fx:id="dealerValueLabel" styleClass="message-label"/>
+            </VBox>
+            <VBox spacing="5" alignment="CENTER">
+                <Label text="Your Hands" styleClass="title-label"/>
+
+                <ScrollPane fx:id="playerHandsScroll"
+                            fitToWidth="true"
+                            prefViewportHeight="200"
+                            VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox fx:id="playerHandsContainer"
+                              spacing="15"
+                              alignment="CENTER"/>
+                    </content>
+                </ScrollPane>
+
+            </VBox>
+
         </VBox>
     </center>
 
-    <!-- Bottom: Player hands, actions, and status -->
+    <!-- Bottom: Action buttons, status, continue/back -->
     <bottom>
         <VBox spacing="10" alignment="CENTER">
-            <VBox fx:id="playerSection" spacing="5" visible="false">
-                <Label text="Your Hand(s)" styleClass="title-label"/>
-                <VBox fx:id="playerHandsBox" spacing="10" alignment="CENTER"/>
-            </VBox>
             <HBox fx:id="actionButtonsBox" spacing="10" alignment="CENTER">
                 <Button fx:id="hitButton" text="Hit" styleClass="primary-button" disable="true"/>
                 <Button fx:id="stayButton" text="Stay" styleClass="secondary-button" disable="true"/>
                 <Button fx:id="doubleButton" text="Double" styleClass="secondary-button" disable="true"/>
                 <Button fx:id="splitButton" text="Split" styleClass="secondary-button" disable="true"/>
                 <Button fx:id="surrenderButton" text="Surrender" styleClass="secondary-button" disable="true"/>
-                <Button fx:id="exitButton" text="Exit Round" styleClass="danger-button"/>
+                <Button fx:id="exitButton" text="Exit Round" styleClass="danger-button" disable="true"/>
             </HBox>
-            <HBox spacing="20" alignment="CENTER">
-                <Label fx:id="balanceLabel" styleClass="message-label"/>
-                <Button fx:id="newRoundButton" text="New Round" styleClass="primary-button" disable="true"/>
-                <Button fx:id="backMenuButton" text="Back to Menu" styleClass="secondary-button"/>
-            </HBox>
-            <Label text="Status" styleClass="title-label" style="-fx-font-size:16px;"/>
-            <ScrollPane fitToWidth="true" fitToHeight="true" prefHeight="150">
+            <ScrollPane fitToWidth="true" prefHeight="150">
                 <TextArea fx:id="statusArea" editable="false" wrapText="true" styleClass="message-label"/>
             </ScrollPane>
+            <HBox spacing="20" alignment="CENTER">
+                <Label fx:id="balanceLabel" styleClass="message-label"/>
+                <Button fx:id="continueButton" text="▶️ Continue" styleClass="primary-button" disable="true"/>
+                <Button fx:id="backMenuButton" text="🔙 Back to Menu" styleClass="secondary-button"/>
+            </HBox>
         </VBox>
     </bottom>
 </BorderPane>
