@@ -94,7 +94,7 @@ BlackjackGame Console/
 - All quick manual tests classes are located in the `test/` package in `src/` folder.
 - All unit tests are located in the `test/` folder.
 - To run a manual test, execute the corresponding class (e.g., `ManualTestHand`, `SplitManualTest`, etc.).
-- To run unit tests, right click on test folder and choose 
+- To run unit tests, right click on test folder and choose `Run 'All Tests'`.
 - Tests cover hand logic, split/re-split, and other core features.
 
 ---
