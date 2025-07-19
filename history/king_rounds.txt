@@ -1,4 +1,0 @@
-Hand 1 | Push | Bet: $10.00 | Payout: $10.00 | You: 17 | Dealer: 17
-Hand 1 | Win | Bet: $10.00 | Payout: $20.00 | You: 20 | Dealer: 18
-Hand 1 | Push | Bet: $20.00 | Payout: $20.00 | You: 20 | Dealer: 20
-Hand 1 | Lose | Bet: $20.00 | Payout: $0.00 | You: 12 | Dealer: 19
