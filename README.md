@@ -1,4 +1,4 @@
-# Blackjack Game Console
+# Blackjack Game
 
 A fully-featured, console-based Blackjack game written in Java. This project supports user registration, login, persistent player profiles, statistics tracking, and robust Blackjack gameplay with support for advanced moves like split, double, insurance, and surrender.
 
